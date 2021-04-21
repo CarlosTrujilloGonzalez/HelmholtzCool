@@ -14,6 +14,10 @@ partial package PartialHelmholtzMedium
     AbsolutePressure(min=Modelica.Constants.small, max=1e12),
     SpecificEntropy(min=-Modelica.Constants.inf, max=Modelica.Constants.inf),
     ThermoStates=Choices.IndependentVariables.ph);
+    
+    
+  constant ReferenceState refState=ReferenceState.None;//added by CTG  
+    
 
   constant HelmholtzMedia.Interfaces.Types.FluidLimits fluidLimits;
 

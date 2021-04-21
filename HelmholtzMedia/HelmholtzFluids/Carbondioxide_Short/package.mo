@@ -1,6 +1,6 @@
 within HelmholtzMedia.HelmholtzFluids;
 package Carbondioxide_Short "Carbondioxide short FES"
-  extends HelmholtzMedia.HelmholtzFluids.Carbondioxide(
+  extends HelmholtzMedia.HelmholtzFluids.CarbonDioxide(
     fluidConstants={fluidConstantsCarbondioxide_Short},
     helmholtzCoefficients=helmholtzCoefficientsCarbondioxide_Short);
 

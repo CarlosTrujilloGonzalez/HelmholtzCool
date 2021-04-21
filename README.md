@@ -1,55 +1,29 @@
 # HelmholtzMedia
-Modelica library for the calculation of fluid properties from an equation of state (EoS).
+Is a very powerful library for the calculation or fluid properties written in Modelica language, developed by Matthis Thorade and licensed under the BSD-3-Clause license.
+The main limitations are related to the limited number of fluid definitions inside the package, and the limited span of transport properties calculation. 
 
-## Library description
-This library calculates fluid properties from an equation of state (EoS) directly within Modelica.
-It supports EoS of the form f=f(T,d) meaning Helmholtz energy as a funtion of temperature and density.
-In addition to all state properties, this library calculates viscosity, thermal conductivity and surface tension.  
+## CoolProp
+Is an incredible soft for fluid properties calculation written in C++, developed by Ian Bell and others and licensed under the MIT license.
+For some reason that I ignore, it seems quite difficult to run it from OpenModelica.
+The soft is also short of transport properties calculation alternatives, as it is focused in reference equations not always available.  
 
-A general description of the library can be found in this [poster][4] or in the related publications:
-* Thorade, M. and Saadat, A. (2012). "HelmholtzMedia - A fluid properties library",
-_Proceedings of the 9th International Modelica Conference_,
-doi:[10.3384/ecp1207663][1]
-* Thorade, M. and Saadat, A. (2013). "Partial derivatives of thermodynamic state properties for dynamic simulation",
-_Environmental Earth Sciences_,
-doi:[10.1007/s12665-013-2394-z][2]
-* Thorade, M. (2014). "Entropiebasierte Bewertungskriterien für den Wärmeübergang in Kraftwerksprozessen und ihre Relevanz für praktische Anwendungen", 
-_Dissertation (TU Hamburg-Harburg)_,
-doi:[10.15480/882.1207][3]
-
-The following fluids have been implemented with EoS and transport properties:  
-[Butane](HelmholtzMedia/HelmholtzFluids/Butane/package.mo),
-[Carbon Dioxide](HelmholtzMedia/HelmholtzFluids/Carbondioxide/package.mo) (with two different EoS),
-[Ethanol](HelmholtzMedia/HelmholtzFluids/Ethanol/package.mo),
-[Isobutane](HelmholtzMedia/HelmholtzFluids/Isobutane/package.mo),
-[Isopentane](HelmholtzMedia/HelmholtzFluids/Isopentane/package.mo),
-[Pentane](HelmholtzMedia/HelmholtzFluids/Pentane/package.mo),
-[Propane](HelmholtzMedia/HelmholtzFluids/Propane/package.mo),
-[R134a](HelmholtzMedia/HelmholtzFluids/R134a/package.mo) (with three reference states).
-
-The following fluids have been implemented with EoS only:  
-[Helium](HelmholtzMedia/HelmholtzFluids/Helium/package.mo),
-[Hexamethyldisiloxane (HMDS)](HelmholtzMedia/HelmholtzFluids/HMDS/package.mo),
-[R32](HelmholtzMedia/HelmholtzFluids/R32/package.mo).
-
-## Current release
-Download the newest [tagged version](https://github.com/thorade/HelmholtzMedia/tags).  
-In the future, there might be a release branch and official releases.
-
+## HelmholtzCool
+Is a fork of HelmholtzMedia made by Carlos Trujillo, that uses a lot of fluids data from CoolProp.
+The soft has been modified to make it compatible with the calculation structure used by CoolProp.
+The Transport package has been completely rewritten, and the EoS package modified in order to enlarge the ideal part treatment.
+In addition to the CoolProp possibilities for transport properties, it is also possible to use temperature correlations with pressure correction.
+It is possible to use different reference states for enthalpy and entropy. But care should be taken, as changing the reference state afects the enthalpy and entropy limits.
+The possibility, present in CoolProp, of using extended corresponding states for transport properties has not been implemented,
+but it will be considered after checking against other approaches.
+The implementation of ECS seems not too difficult, but speed will be low for sure. More promising seems residual entropy scaling, at least for non associating compounds.
+I will continue adding fluids from CoolProp and complementing transport properties when lacking.
+ 
 ## License
-Copyright  2009-2020 Matthis Thorade
-
-This Modelica package is free software and the use is completely at your own risk; 
-it is available under the BSD 3-Clause license. 
-Upon request, it is also available under other licenses, including the [Modelica License 2](https://www.modelica.org/licenses/ModelicaLicense2).  
-
-## Development and contribution
-You may report feedback, issues or feature-requests using the [Issues](https://github.com/thorade/HelmholtzMedia/issues) button.  
-Code contributions are very welcome, especially in the form of [Pull Requests](https://github.com/thorade/HelmholtzMedia/pulls).
+For the original HelmholtzMedia soft: Copyright  2009-2020 Matthis Thorade
+For the CoolProp data: Copyright (C) 2012-2016 Ian H. Bell and other CoolProp developers
+For the additions and modifications of the original HelmholtzMedia soft: Copyright (C) 2021 Carlos Trujillo Gonzalez
+You will find in this folder the licenses for the original softs.
+The additions and modifications are licensed by C.Trujillo under the GPL version 3 license.
 
 
-[1]: http://dx.doi.org/10.3384/ecp1207663 "Modelica Conference Paper: HelmholtzMedia"
-[2]: http://dx.doi.org/10.1007/s12665-013-2394-z "ISI Journal Paper: Partial derivatives"
-[3]: http://dx.doi.org/10.15480/882.1207 "Dissertation"
-[4]: http://gfzpublic.gfz-potsdam.de/pubman/item/escidoc:247376:1/component/escidoc:247375/20907.pdf "Poster"
 
