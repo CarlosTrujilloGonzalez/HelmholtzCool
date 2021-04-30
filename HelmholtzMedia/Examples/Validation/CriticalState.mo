@@ -1,7 +1,7 @@
 within HelmholtzMedia.Examples.Validation;
 model CriticalState
   replaceable package Medium =
-      HelmholtzMedia.HelmholtzFluids.Carbondioxide;
+      HelmholtzMedia.HelmholtzFluidsCD.CarbonDioxide;
   Medium.ThermodynamicState criticalState;
 
 protected

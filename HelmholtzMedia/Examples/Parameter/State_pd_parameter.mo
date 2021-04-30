@@ -1,7 +1,7 @@
 within HelmholtzMedia.Examples.Parameter;
 model State_pd_parameter "calculate state record from pd input"
 
-  package Medium = HelmholtzFluids.Propane;
+  package Medium = HelmholtzFluidsPQ.Propane;
 
   parameter Medium.AbsolutePressure p=101325;
   parameter Medium.Density d=1e-6;

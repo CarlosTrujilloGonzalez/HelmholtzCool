@@ -2,7 +2,8 @@ within HelmholtzMedia.Examples;
 model BranchingDynamicPipes
   extends Modelica.Fluid.Examples.BranchingDynamicPipes(
     redeclare package Medium =
-        HelmholtzMedia.HelmholtzFluids.Carbondioxide_Short,
+        HelmholtzMedia.HelmholtzFluidsCD.Carbondioxide_Short,
+        //FreeFluids.TMedia.Fluids.CO2,
     system(energyDynamics=Modelica.Fluid.Types.Dynamics.FixedInitial));
 
   annotation (experiment(

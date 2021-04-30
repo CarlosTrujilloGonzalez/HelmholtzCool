@@ -1,7 +1,7 @@
 within HelmholtzMedia.Examples.Parameter;
 model State_pT_parameter "calculate state record from pT input"
 
-  package Medium = HelmholtzFluids.Helium;
+  package Medium = HelmholtzFluidsGH.Helium;
 
   parameter Medium.AbsolutePressure p=986636; //101325;
   parameter Medium.Temperature T=3.72952; //2.1768;

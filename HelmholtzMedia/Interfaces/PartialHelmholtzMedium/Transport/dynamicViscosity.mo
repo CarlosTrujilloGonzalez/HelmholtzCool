@@ -24,6 +24,7 @@ within HelmholtzMedia.Interfaces.PartialHelmholtzMedium.Transport;
   protected
     MolarMass MM = fluidConstants[1].molarMass;
     Real DM=state.d/MM "molar density mol/m3";
+    Real dm  "molar density mol/lt";
     Integer diluteModel=dynamicViscosityCoefficients.diluteModel;
     Integer initialModel=dynamicViscosityCoefficients.initialModel;
     Integer residualModel=dynamicViscosityCoefficients.residualModel;
@@ -53,30 +54,38 @@ within HelmholtzMedia.Interfaces.PartialHelmholtzMedium.Transport;
     Real muR, muR4 "reduced dipole moment, and its four power";
     Real kappa;
     Real Fc;
+    Real h "density reducing ratio for ECS";
     Real coef[10,4];
     Real EE[10];
     Real eta1, eta2;
     Real vp,Zc,Z1,Z2,Pr;
+    Real T0,DM0 "equivalent T and molar density of the reference fluid";
+    Real[:] coefL=dynamicViscosityCoefficients.coefL "coefficients for liquid viscosity correlation";
+    
   algorithm
   
-    //dilute viscosity calculation
+    //DILUTE VISCOSITY
     if diluteModel==2 then
     //collision integral
       tau:=log(state.T/epsilon);
       omega:=exp(sum(a[i, 1]*(tau)^a[i, 2] for i in 1:size(a, 1)));
       eta0:=dynamicViscosityCoefficients.diluteLead*(1000*MM*state.T)^0.5/(sigma^2*omega);
+      
     elseif diluteModel==3 then
     //kinetic theory
       tau:=state.T/epsilon;
       omega:=1.16145/tau^0.14874 + 0.52487*exp(-0.77320*tau) + 2.16178*exp(-2.43787*tau);
-      eta0:=26.692E-3*(1000*MM*state.T)^0.5/(sigma^2*omega);
+      eta0:=26.692E-9*(1000*MM*state.T)^0.5/(sigma^2*omega)*dynamicViscosityCoefficients.Fc;
+      
     elseif diluteModel==4 then
     //powers of T
       eta0:=sum(a[i, 1]*(state.T)^a[i, 2] for i in 1:size(a, 1));
+      
     elseif diluteModel==5 then
     //powers of Tr
       tau:=state.T/dynamicViscosityCoefficients.diluteTred;
       eta0:=sum(a[i, 1]*(tau)^a[i, 2] for i in 1:size(a, 1));
+      
     elseif diluteModel==6 then
     //Chung
       if dynamicViscosityCoefficients.MM>0 then
@@ -101,6 +110,7 @@ within HelmholtzMedia.Interfaces.PartialHelmholtzMedium.Transport;
       omega:=1.16145*tau^(-0.14874) + 0.52487*exp(-0.77320*tau) + 2.16178*exp(-2.43787*tau)-6.435e-4*tau^0.14874*sin(18.0323*tau^(-0.76830) - 7.27371);
       Fc := 1 - 0.2756 * w + 0.059035 * muR4 + kappa;
       eta0:=4.0785e-10*(1000*MM*state.T)^0.5/(Vc^(2.0/3.0)*omega)*Fc "in Pa·s, not poises as Chung";
+      
     elseif diluteModel==10 then
     //T correlation
       eta0:=physPropCorr(dynamicViscosityCoefficients.corrG,dynamicViscosityCoefficients.coefG,MM*1000,state.T);
@@ -113,33 +123,45 @@ within HelmholtzMedia.Interfaces.PartialHelmholtzMedium.Transport;
         tau:=state.T/245;
         omega:=sum(EE[i]*(tau)^((i-1)/3.0-1) for i in 1:size(EE, 1));
         eta0:=12.0085*tau^0.5*omega*1e-6;
+      elseif mediumName=="ethylbenzene" then
+        eta0:=0.22115e-6*state.T^0.5/exp(-1.4933+473.2/state.T-57033/state.T^2);
       end if;
+      
     elseif diluteModel==0 then
       eta0:=0;
+      
     else
       assert(false,"Unknown dilute viscosity model");
     end if;
     
-    //initial calculation
+    //INITIAL VISCOSITY
     if initialModel==2 then
     //Rainwater-Friend
       tau:=state.T/epsilon;
       Bi:= 6.022137e-4*sigma^3*sum(b[i, 1]*tau^b[i, 2] for i in 1:size(b, 1)) "m3/mol";
       etai:=eta0*Bi*DM;
+      
     elseif initialModel==3 then
     //empirical
       tau:=dynamicViscosityCoefficients.initialTred/state.T;
       delta:=DM/dynamicViscosityCoefficients.initialDMred;
       etai:=sum(b[i, 1]*delta^b[i, 2]*tau^b[i,3] for i in 1:size(b, 1));
+      
+    elseif  initialModel==1 then
+    //hardcoded
+      if mediumName=="ethylbenzene" then
+        etai:=(0.0132814-10.8624/state.T+1664.060/state.T^2)*DM*1e-6;
+      end if;
+      
     elseif initialModel==0 then
       etai:=0;
     else
       assert(false,"Unknown initial viscosity model");
     end if;
 
-    //residual calculation
+    //RESIDUAL VISCOSITY
     if residualModel==2 then
-    //modified Batschinski-Hildebrand
+      //modified Batschinski-Hildebrand
       tau:=dynamicViscosityCoefficients.residualTred/state.T;
       delta:=DM/dynamicViscosityCoefficients.residualDMred;
       A:=sum(dp[i, 1]*delta^dp[i, 2]*tau^dp[i,3]*exp(dp[i,4]*delta^dp[i,5]) for i in 1:size(dp, 1)) "double polynomial part";
@@ -147,8 +169,9 @@ within HelmholtzMedia.Interfaces.PartialHelmholtzMedium.Transport;
       C:=sum(b0n[i, 1]*tau^b0n[i,2] for i in 1:size(b0n, 1)) "delta0 num";
       D:=sum(b0d[i, 1]*tau^b0d[i,2] for i in 1:size(b0d, 1)) "delta0 denom";
       etar:=A+B*(1/(C/D-delta)-D/C) "A+B*(1/(delta0-delta)-1/delta0)";
+      
     elseif residualModel==3 then
-    //friction theory
+      //friction theory
       tau:=dynamicViscosityCoefficients.residualTred/state.T;
       psi1:=exp(tau)-dynamicViscosityCoefficients.c1;
       psi2:=exp(tau^2)-dynamicViscosityCoefficients.c2;
@@ -165,8 +188,9 @@ within HelmholtzMedia.Interfaces.PartialHelmholtzMedium.Transport;
       pa:=state.p*1e-5-pr;
       dPr:=pr-pid;
       etar:=ka*pa+kdr*dPr+ki*pid+kaa*pa^2+kdrdr*dPr^2+kii*pid^2;
+      
     elseif residualModel==6 then
-    //Chung. Use always with diluteModel=6
+      //Chung. Use always with diluteModel=6
       coef:={{6.32402,50.4119,-51.6801,1189.02},{1.2102e-3,-1.1536e-3,-6.2571e-3,0.037283}, {5.28346,254.209,-168.481,3898.27},{6.62263,38.0957,-8.46414,31.4178}, {19.7454,7.63034,-14.3544,31.5267}, {-1.89992,-12.5367,4.98529,-18.1507}, {24.2745,3.44945,-11.2913,69.3466},{0.79716,1.11764,0.012348,-4.11661}, {-0.23816,0.067695,-0.8163,4.02528},{0.068629,0.34793,0.59256,-0.72663}};    
       muR := if mu >0 then 131.3 * mu / (Vc * 1e6 * Tc) ^ 0.5 else 0.0;
       muR4 := muR * muR * muR * muR;
@@ -182,6 +206,40 @@ within HelmholtzMedia.Interfaces.PartialHelmholtzMedium.Transport;
       end if;
       eta2:=36.344e-11*(1000*MM*Tc)^0.5/Vc^(2/3)*EE[7]*A*A*C*exp(EE[8]+EE[9]/tau+EE[10]/(tau*tau));
       etar:= eta1+eta2-eta0;
+      
+    elseif residualModel==7 then
+      //VS2
+      dm:=DM*1e-3;
+      A:=coefL[1]+coefL[2]/state.T;
+      B:=dm^0.5*(dm-coefL[8])/coefL[8];
+      C := A + (coefL[3] + coefL[4]*state.T^(-3/2))*dm^0.1 + (coefL[5] + coefL[6]/state.T + coefL[7]/state.T^2)*B;
+      etar:=(exp(C)-exp(A))*1e-6;
+      
+    elseif residualModel==8 then
+      //residual entropy scaling. Use with kinetic theory dilute viscosity
+      tau:=Tc/state.T;
+      delta:=DM*Vc;
+      X:=if not(dynamicViscosityCoefficients.rhoSrc==0.0) then 8.3144*DM*(tau*EoS.f_rt(delta,tau)-EoS.f_r(delta,tau))/dynamicViscosityCoefficients.rhoSrc else  DM*(tau*EoS.f_rt(delta,tau)-EoS.f_r(delta,tau))*fluidConstants[1].criticalMolarVolume/(EoS.f_rt(1.0,1.0)-EoS.f_r(1.0,1.0));
+      //assert(false, "rhoSrc calc:"+String((EoS.f_rt(1.0,1.0)-EoS.f_r(1.0,1.0))/fluidConstants[1].criticalMolarVolume)+ "  DM:"+String(DM),AssertionLevel.warning);
+      A:=sum(dynamicViscosityCoefficients.clg[i, 1]*X^(i-1) for i in 1:size(dynamicViscosityCoefficients.clg, 1)) "liquid polynomia";
+      B:=sum(dynamicViscosityCoefficients.clg[i, 2]*X^(i-1) for i in 1:size(dynamicViscosityCoefficients.clg, 1)) "gas polynomia"; 
+      C:=1/(1+exp(-100*(X-2))) "step function";
+      D:=exp(C*A+(1-C)*B) "reduced reference viscosity";
+      etar:=eta0*(dynamicViscosityCoefficients.C*(D-1));
+      
+    elseif residualModel==9 then
+      //ECS calculation. Use with kinetic theory dilute viscosity
+      (T0,DM0):=conformalStateSolver(state.T,DM);
+      h:=DM0/DM;
+      //assert(false,"T0:"+String(T0)+"  DM0:"+String(DM0),AssertionLevel.warning);
+      delta:=DM*Vc;
+      if size(dynamicViscosityCoefficients.nistCoeff, 1)>0 then
+        DM0:=DM0*sum(dynamicViscosityCoefficients.nistCoeff[i]*delta^(i-1) for i in 1:size(dynamicViscosityCoefficients.nistCoeff, 1));
+        //assert(false,"DM0 corr.:"+String(DM0),AssertionLevel.warning);
+      end if;
+      etar:=referenceResidualViscosity(T0,DM0)*(state.T*MM/(T0*referenceConstants.molarMass))^0.5*h^(-0.666667);
+      //assert(false,"etar:"+String(etar),AssertionLevel.warning);
+      
     elseif residualModel==10 then
       //From saturated liquid correlation and low pressure viscosity, using Lucas' pressure correction
       vp:=saturationPressure(state.T);
@@ -216,6 +274,7 @@ within HelmholtzMedia.Interfaces.PartialHelmholtzMedium.Transport;
         Fc := (1 + (Fc - 1) * Y ^ (-3)) / Fc;
         etar := Z2 * Fc/ X-eta0;
       end if;
+      
     elseif residualModel==1 then
     //hardcoded
       if mediumName=="helium" then
@@ -245,14 +304,23 @@ within HelmholtzMedia.Interfaces.PartialHelmholtzMedium.Transport;
         s:={0,1,0,1,1.5,0,2,0,1,0,1};
         g:={0.47177003, -0.23950311, 0.39808301, -0.27343335, 0.35192260, -0.21101308, -0.00478579, 0.07378129, -0.030435255, -0.30435286, 0.001215675};
         etar:=15.977e-6*sum(g[i]*delta^r[i]*tau^s[i] for i in 1:9)/(1+sum(g[i]*delta^r[i]*tau^s[i] for i in 10:11));    
+      elseif mediumName == "ethylbenzene" then
+        tau:=state.T/617.12;
+        delta:=DM/2741.016;
+        A:=(-0.0376893+0.168877/tau^1.1)*delta^6.3+17.9684*delta^0.3+3.57702e-11*delta^23.7/tau^3.4 +(29.996*delta-8.00082*tau)*delta^0.3 -25.7468*delta^0.85;
+        B:=-3.29316e-13*delta^4.6/tau^20.8-2.92665e-13*delta^11.1/tau^10.6+2.97768e-13*delta^5.6/tau^19.7+1.76186e-18*delta^12.4/tau^21.9;
+        etar:=(A*delta^(2/3)*tau^0.5+B*exp(delta^2))*1e-6;
       else
         assert(false,"residual hardcoded viscosity not found");
-      end if;     
+      end if;
+      
     elseif residualModel==0 then
       etar:=0;
+      
     else
       assert(false,"Unknown dilute viscosity model");
     end if;
+    
     eta:=eta0+etai+etar;
     //assert(false,"Viscosity: "+String(eta0)+"  "+String(etai)+"  "+String(etar),AssertionLevel.warning);
   annotation(

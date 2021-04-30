@@ -1,6 +1,6 @@
 within HelmholtzMedia.Examples.ConvergenceTest;
 model SinglePhase_Transport
-  replaceable package Medium = HelmholtzFluids.CarbonDioxide;
+  replaceable package Medium = HelmholtzFluidsCD.CarbonDioxide;
 
   Medium.AbsolutePressure p;
   Medium.Temperature T;

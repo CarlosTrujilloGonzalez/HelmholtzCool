@@ -30,8 +30,11 @@ protected
   Integer criticalModel=thermalConductivityCoefficients.criticalModel;
   Real[size(thermalConductivityCoefficients.an, 1),2] an=thermalConductivityCoefficients.an;
   Real[size(thermalConductivityCoefficients.ad, 1),2] ad=thermalConductivityCoefficients.ad;
+  Real[size(thermalConductivityCoefficients.ai, 1)] ai=thermalConductivityCoefficients.ai;
   Real tau=0 "reduced temperature";
   Real delta=0 "reduced density";
+  Real fint "internal dilute conductivity factor";
+  Real lambda0i,lambda0t;
   Real eta=0 "viscosity";
   Real eta0=0 "dilute viscosity";
   Real[size(thermalConductivityCoefficients.b, 1),5] b=thermalConductivityCoefficients.b;
@@ -44,6 +47,9 @@ protected
   Real tauRef;
   Real dDM_dP "pressure derivative w.r.t. molar density at state.T";
   Real dDMref_dP "pressure derivative w.r.t. molar density at Tref" ;
+  Real qD;
+  Real zeta0;
+  Real Gamma;
   Real zetaBase;
   Real zeta;
   Real qDz;
@@ -55,27 +61,48 @@ protected
   Real c1[:];
   Real r;
   Real s;
+  Real t;
   Real coef[7,4];
   Real B[7];
+  Real T0,DM0 "equivalent T and molar density of the reference fluid";
+  Real h "density reducing ratio for ECS";
   Real mu=fluidConstants[1].dipoleMoment;
   Real y,muR,muR4,G1,G2,f;
 algorithm
   assert(state.phase <> 2, "thermalConductivity warning: property not defined in two-phase region", level=AssertionLevel.warning);
   
-  //dilute calculation
+  //DILUTE
   if diluteModel==2 then
   //rational polynomia
     tau:=state.T/thermalConductivityCoefficients.diluteTred;
     lambda0:=sum(an[i, 1]*(tau)^an[i, 2] for i in 1:size(an, 1))/sum(ad[i, 1]*(tau)^ad[i, 2] for i in 1:size(ad, 1));
+    
   elseif diluteModel==3 then
     //eta0 and polynomial
     (eta,eta0):=dynamicViscosity(state);
     tau:=Tc/state.T;
     lambda0:=eta0*1e6*an[1,1];
     lambda0:=lambda0+sum(an[i, 1]*(tau)^an[i, 2] for i in 2:size(an, 1));
+    
+  elseif diluteModel==9 then
+    //ECS: internal + translational
+    if size(ai,1)>0 then
+      fint:=sum(ai[i]*state.T^(i-1) for i in 1:size(ai,1));
+    else
+      fint:=1.32e-3;
+    end if;
+    (eta,eta0):=dynamicViscosity(state);
+    delta:=DM/DMc;
+    tau:=Tc/state.T;
+    cp:=8.314472*(-tau^2*EoS.f_itt(delta,tau)+1);
+    lambda0i:=eta0*1e3*fint*(cp-5*8.314472/2)/MM;
+    lambda0t:=eta0*1e3*8.314472*15e-3/(4*MM);
+    lambda0:=lambda0i+lambda0t;
+    
   elseif diluteModel==10 then
     //T correlation
       lambda0:=physPropCorr(thermalConductivityCoefficients.corrG,thermalConductivityCoefficients.coefG,MM*1000,state.T);
+      
   elseif diluteModel==1 then
     if mediumName=="carbondioxide" then
       b1:={0.4226159, 0.6280115, -0.5387661, 0.6735941, 0, 0, -0.4362677, 0.2255388};
@@ -102,27 +129,44 @@ algorithm
     else
       assert(false,"dilute hardcoded thermal conductivity not found");
     end if;
+    
   elseif diluteModel==0 then
     lambda0:=0;
   end if;
     
-  //residual calculation
+  //RESIDUAL
   if residualModel==2 then
   //polynomial
     tau:=thermalConductivityCoefficients.residualTred/state.T;
     delta:=state.d/thermalConductivityCoefficients.residualDred;
     lambdar:=sum(b[i, 1]*(tau)^b[i, 2]*(delta)^b[i,3] for i in 1:size(b, 1));
+    
   elseif residualModel==3 then
   //polynomial and exponential
     tau:=Tc/state.T;
     delta:=DM/DMc;
     lambdar:=sum(b[i, 1]*(tau)^b[i, 2]*(delta)^b[i,3]*exp(-b[i,4]*delta^b[i,5]) for i in 1:size(b, 1));
+    
   elseif residualModel==4 then
     //polynomial2
     tau:=state.T/thermalConductivityCoefficients.residualTred;
     delta:=state.d/thermalConductivityCoefficients.residualDred;
     lambdar:=sum((b[i, 1]+b[i, 2]*tau)*delta^i for i in 1:size(b, 1))*1e-3;
+    
+  elseif residualModel==9 then
+    //ECS calculation.
+    (T0,DM0):=conformalStateSolver(state.T,DM);
+    h:=DM0/DM;
+    delta:=DM*Vc;
+    //assert(false,"T0:"+String(T0)+"  DM0:"+String(DM0),AssertionLevel.warning);
+    if size(thermalConductivityCoefficients.nistCoeff, 1)>0 then
+      DM0:=DM0*sum(thermalConductivityCoefficients.nistCoeff[i]*delta^(i-1) for i in 1:size(thermalConductivityCoefficients.nistCoeff, 1));
+    end if;
+    //assert(false,"DM0 corr.:"+String(DM0),AssertionLevel.warning);
+    lambdar:=referenceResidualConductivity(T0,DM0)*(state.T*referenceConstants.molarMass/(T0*MM))^0.5*h^(-0.666667);
+    
   elseif residualModel==1 then
+  //hardcoded
     if mediumName=="helium" then
     //McCarty 1972
       if state.T<300 then
@@ -136,6 +180,7 @@ algorithm
     else
       assert(false,"residual hardcoded thermal conductivity not found");
     end if;
+    
   elseif residualModel==10 then
     //Saturated liquid correlation without pressure correction, and low density value with Chung's density correction
     vp:=saturationPressure(state.T);    
@@ -158,26 +203,39 @@ algorithm
       if lambdar<0 then
         lambdar:=0;
       end if;
-    end if;  
+    end if;
+      
   elseif residualModel==0 then
     lambdar:=0;
   else
     lambdar:=0;
   end if;
   
-  //critical calculation
+  //CRITICAL
   if criticalModel==2 then
   //simplified Olchowy Sengers
+    if thermalConductivityCoefficients.qD>0 then
+      qD:=thermalConductivityCoefficients.qD;
+      zeta0:=thermalConductivityCoefficients.zeta0;
+      Gamma:=thermalConductivityCoefficients.Gamma;
+    else
+      r:=5.58+7.94*fluidConstants[1].acentricFactor;
+      s:=1.45+1.21*fluidConstants[1].acentricFactor;
+      t:=2-3*thermalConductivityCoefficients.nu;
+      qD:=1/(-0.024e-9+0.863*(Vc/Modelica.Constants.N_A)^0.333333);
+      zeta0:=0.266*(Vc/(t*r*Modelica.Constants.N_A))^0.333333;
+      Gamma:=0.058*s*s/(t*r);
+    end if;
     tau:=Tc/state.T;
     delta:=DM/DMc;
     Tref:=if thermalConductivityCoefficients.Tref>0 then thermalConductivityCoefficients.Tref else 1.5*Tc;
     tauRef:=Tc/Tref;
     dDM_dP:=1/(Modelica.Constants.R*state.T*(1+2*delta*EoS.f_rd(delta,tau)+delta^2*EoS.f_rdd(delta,tau)));
     dDMref_dP:=1/(Modelica.Constants.R*Tref*(1+2*delta*EoS.f_rd(delta,tauRef)+delta^2*EoS.f_rdd(delta,tauRef)));
-    zetaBase:=(Pc*delta/(thermalConductivityCoefficients.Gamma*DMc))*(dDM_dP-Tref*dDMref_dP/ state.T);
+    zetaBase:=(Pc*delta/(Gamma*DMc))*(dDM_dP-Tref*dDMref_dP/ state.T);
     if zetaBase>0 then
-      zeta:=thermalConductivityCoefficients.zeta0*zetaBase^(thermalConductivityCoefficients.nu/thermalConductivityCoefficients.gamma);
-      qDz:=thermalConductivityCoefficients.qD*zeta;
+      zeta:=zeta0*zetaBase^(thermalConductivityCoefficients.nu/thermalConductivityCoefficients.gamma);
+      qDz:=qD*zeta;
       cv:=-Modelica.Constants.R*tau^2*(EoS.f_itt(delta,tau)+EoS.f_rtt(delta,tau));
       cp:=cv+Modelica.Constants.R*(1+delta*(EoS.f_rd(delta,tau)-tau*EoS.f_rtd(delta,tau)))^2/(1+delta*(2*EoS.f_rd(delta,tau)+delta*EoS.f_rdd(delta,tau)));
       eta:=dynamicViscosity(state);
@@ -187,7 +245,9 @@ algorithm
     else
       lambdac:=0;
     end if;
+    
   elseif criticalModel==1 then
+  //hardcoded
     if mediumName=="carbondioxide" then
       tau:=state.T/304.1282;
       delta:=state.d/467.6;
@@ -198,9 +258,11 @@ algorithm
       f:=((y^2)^b1[6] + ((b1[7]*(delta-r))^2)^b1[8])^b1[9];
       lambdac:=0.775547504e-3*4.81384*s/f;
     end if;
+    
   else
     lambdac:=0;
   end if;
+  
   lambda:=lambda0+lambdar+lambdac;
   //assert(false,"Th.cond.: "+String(lambda0)+"  "+String(lambdar)+"  "+String(lambdac),AssertionLevel.warning);
 end thermalConductivity;

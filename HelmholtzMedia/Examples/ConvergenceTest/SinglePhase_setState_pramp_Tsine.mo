@@ -1,6 +1,6 @@
 within HelmholtzMedia.Examples.ConvergenceTest;
 model SinglePhase_setState_pramp_Tsine
-  package Medium = HelmholtzFluids.Butane;
+  package Medium = HelmholtzFluidsAB.Butane;
   Medium.AbsolutePressure p(start=101325);
   Medium.Temperature T(start=298.15);
 

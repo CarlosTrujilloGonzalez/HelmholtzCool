@@ -1,6 +1,6 @@
 within HelmholtzMedia.Examples.ConvergenceTest;
 model TwoPhase_setState
-  package Medium = HelmholtzFluids.Helium;
+  package Medium = HelmholtzFluidsGH.Helium;
   Medium.Density d;
   Medium.Temperature T;
   Medium.ThermodynamicState state;

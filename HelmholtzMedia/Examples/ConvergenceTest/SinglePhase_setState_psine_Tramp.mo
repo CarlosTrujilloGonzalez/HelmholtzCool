@@ -1,6 +1,6 @@
 within HelmholtzMedia.Examples.ConvergenceTest;
 model SinglePhase_setState_psine_Tramp
-  replaceable package Medium = HelmholtzFluids.Butane;
+  replaceable package Medium = HelmholtzFluidsAB.Butane;
   Medium.AbsolutePressure p(start=101325);
   Medium.Temperature T(start=298.15);
 

@@ -1,6 +1,6 @@
 within HelmholtzMedia.Examples.Validation;
 model idealGasLimit
-  replaceable package Medium = HelmholtzFluids.Helium;
+  replaceable package Medium = HelmholtzFluidsGH.Helium;
 
   parameter Medium.Temperature T=298.15;
   Modelica.SIunits.SpecificVolume v;

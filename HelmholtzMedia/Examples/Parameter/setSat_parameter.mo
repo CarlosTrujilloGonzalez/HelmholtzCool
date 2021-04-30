@@ -1,6 +1,6 @@
 within HelmholtzMedia.Examples.Parameter;
 model setSat_parameter
-  replaceable package Medium = HelmholtzFluids.Carbondioxide_Short;
+  replaceable package Medium = HelmholtzFluidsCD.Carbondioxide_Short;
 
   Medium.SaturationProperties sat;
   Medium.SaturationProperties sat_p;

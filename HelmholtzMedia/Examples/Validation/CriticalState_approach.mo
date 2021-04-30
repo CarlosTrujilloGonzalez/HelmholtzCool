@@ -1,6 +1,6 @@
 within HelmholtzMedia.Examples.Validation;
 model CriticalState_approach
-  replaceable package Medium = HelmholtzFluids.Carbondioxide;
+  replaceable package Medium = HelmholtzFluidsCD.CarbonDioxide;
 
   Medium.ThermodynamicState state_sup;
   Medium.ThermodynamicState state_sub;

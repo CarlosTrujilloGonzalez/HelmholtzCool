@@ -1,7 +1,7 @@
 within HelmholtzMedia.Examples.Parameter;
 model State_Ts_parameter "calculate state record from Ts input"
 
-  package Medium = HelmholtzFluids.Propane;
+  package Medium = HelmholtzFluidsPQ.Propane;
 
   parameter Medium.Temperature T=300.05;
   parameter Medium.SpecificEntropy s=2353.05;

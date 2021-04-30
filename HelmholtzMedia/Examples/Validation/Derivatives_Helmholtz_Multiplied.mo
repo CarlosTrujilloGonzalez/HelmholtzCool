@@ -4,7 +4,7 @@ model Derivatives_Helmholtz_Multiplied
   // values for comparison are given by RefProp
   // go to Options, Preferences, check "Show options used for analyzing EoS"
 
-  replaceable package Medium = HelmholtzMedia.HelmholtzFluids.Carbondioxide;
+  replaceable package Medium = HelmholtzMedia.HelmholtzFluidsCD.CarbonDioxide;
   parameter Medium.Density d=533;
   parameter Medium.Temperature T=304;
 

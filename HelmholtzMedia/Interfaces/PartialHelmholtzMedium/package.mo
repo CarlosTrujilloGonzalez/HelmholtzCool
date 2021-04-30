@@ -16,7 +16,8 @@ partial package PartialHelmholtzMedium
     ThermoStates=Choices.IndependentVariables.ph);
     
     
-  constant ReferenceState refState=ReferenceState.None;//added by CTG  
+  constant ReferenceState refState=ReferenceState.None;//added by CTG
+  constant ReferenceSubstance refSubstance=ReferenceSubstance.None;//added by CTG
     
 
   constant HelmholtzMedia.Interfaces.Types.FluidLimits fluidLimits;
@@ -30,7 +31,11 @@ partial package PartialHelmholtzMedium
   constant Transport.SurfaceTensionCoefficients surfaceTensionCoefficients;
 
   constant Ancillary.AncillaryCoefficients ancillaryCoefficients;
-
+	
+  constant EoS.HelmholtzCoefficients referenceHelmholtzCoeff;//added by CTG
+  constant FluidConstants referenceConstants;//added by CTG
+  constant Transport.DynamicViscosityCoefficients referenceViscosityCoeff;//added by CTG
+  constant Transport.ThermalConductivityCoefficients referenceConductivityCoeff;//added by CTG
   // constant IndependentVariables independentVariables=IndependentVariables.dTX;
   constant InputChoice inputChoice=InputChoice.ph
   "Default choice of input variables for property computations";

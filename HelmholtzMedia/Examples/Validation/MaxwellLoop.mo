@@ -1,6 +1,6 @@
 within HelmholtzMedia.Examples.Validation;
 model MaxwellLoop "show Maxwell Loops"
-  replaceable package Medium = HelmholtzFluids.Butane;
+  replaceable package Medium = HelmholtzFluidsAB.Butane;
   parameter Medium.Temperature T=0.9*Tcrit;
 
   Medium.Density d;

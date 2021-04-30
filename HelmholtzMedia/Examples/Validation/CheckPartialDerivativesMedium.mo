@@ -1,7 +1,7 @@
 within HelmholtzMedia.Examples.Validation;
 model CheckPartialDerivativesMedium
    replaceable package Medium =
-      HelmholtzMedia.HelmholtzFluids.Butane;
+      HelmholtzMedia.HelmholtzFluidsAB.Butane;
 
    // example for calculating partial derivative wrt h at constant p
 

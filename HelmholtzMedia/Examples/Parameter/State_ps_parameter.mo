@@ -1,7 +1,7 @@
 within HelmholtzMedia.Examples.Parameter;
 model State_ps_parameter "calculate state record from ps input"
 
-  package Medium = HelmholtzFluids.Butane;
+  package Medium = HelmholtzFluidsAB.Butane;
 
   parameter Medium.AbsolutePressure p=4.8813e+007;
   parameter Medium.SpecificEntropy s=593.986;

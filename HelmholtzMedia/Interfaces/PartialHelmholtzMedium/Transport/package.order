@@ -2,6 +2,14 @@ DynamicViscosityCoefficients
 ThermalConductivityCoefficients
 SurfaceTensionCoefficients
 surfaceTension
+conformalStateSolver
+referenceResidualViscosity
+referenceResidualConductivity
+rf_r
+rf_rd
+rf_rdd
+rf_rt
+rf_rtd
 dynamicViscosity
 thermalConductivity
 physPropCorr

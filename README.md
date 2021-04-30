@@ -12,10 +12,9 @@ Is a fork of HelmholtzMedia made by Carlos Trujillo, that uses a lot of fluids d
 The soft has been modified to make it compatible with the calculation structure used by CoolProp.
 The Transport package has been completely rewritten, and the EoS package modified in order to enlarge the ideal part treatment.
 In addition to the CoolProp possibilities for transport properties, it is also possible to use temperature correlations with pressure correction.
+I have also enlarged the number of fluids with ECS calculation. 
 It is possible to use different reference states for enthalpy and entropy. But care should be taken, as changing the reference state afects the enthalpy and entropy limits.
-The possibility, present in CoolProp, of using extended corresponding states for transport properties has not been implemented,
-but it will be considered after checking against other approaches.
-The implementation of ECS seems not too difficult, but speed will be low for sure. More promising seems residual entropy scaling, at least for non associating compounds.
+The fluids package has been splitted in several packages due to the large number of fluids expected, and to the fact that the opening of the packages in OpenModelica is very slow.
 I will continue adding fluids from CoolProp and complementing transport properties when lacking.
  
 ## License

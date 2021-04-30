@@ -1,6 +1,6 @@
 within HelmholtzMedia.Examples.Validation;
 model prettyPrintCoefficients "pretty printing of EoS coefficients"
-  replaceable package Medium = HelmholtzFluids.Carbondioxide;
+  replaceable package Medium = HelmholtzFluidsCD.CarbonDioxide;
 
 protected
   String fileName = "prettyPrintCoefficients.txt";
