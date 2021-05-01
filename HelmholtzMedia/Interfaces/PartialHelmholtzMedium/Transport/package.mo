@@ -15,7 +15,407 @@ package Transport
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA."
-	
+  
+  package ECSreferences
+    //Propane as reference
+    final constant FluidConstants
+  fluidConstantsPropane(
+    casRegistryNumber="74-98-6",
+    molarMass=0.04409562,
+    hasCriticalData=true,
+       criticalTemperature=369.89,
+       criticalPressure=4251200,
+       criticalMolarVolume=0.00019999999999999996,
+HCRIT0=555235,       SCRIT0=2051.62,    hasIdealGasHeatCapacity=false,
+    hasDipoleMoment=true,
+       dipoleMoment=0.084,
+    hasFundamentalEquation=true,
+    hasLiquidHeatCapacity=true,
+    hasSolidHeatCapacity=false,
+    hasAccurateViscosityData=true,
+    hasAccurateConductivityData=true,
+    hasVapourPressureCurve=true,
+    hasAcentricFactor=true,
+       acentricFactor=0.1521,
+    triplePointTemperature=85.525,
+    triplePointPressure=0.00017184840809308612,
+    normalBoilingPoint=231.036,
+    meltingPoint=85.525) "Fluid Constants";
+
+//HCRIT0=555334.1335047669,//CoolProp
+    //EOS calculation
+    //SCRIT0=2051.8572148235367,//CoolProp
+    //EOS calculation
+  final constant EoS.HelmholtzCoefficients
+  helmholtzCoefficientsPropane(
+    idealLead={-4.970583, 4.29352},
+    idealLog=[
+      3,         1.],
+    idealEinstein=[
+      3.043,        -1.062478;
+      5.874,        -3.344237;
+      9.337,        -5.363757;
+      7.922,        -11.762957],
+    idealASHRAEoffset={3.32799, -1.50725},
+    idealIIRoffset={0, 0},
+    idealNBPoffset={3.21945, -1.43891},
+    residualPoly=[
+      0.042910051,    1,    4;
+      1.7313671,    0.33,    1;
+      -2.4516524,    0.8,    1;
+      0.34157466,    0.43,    2;
+      -0.46047898,    0.9,    2],
+    residualBwr=[
+      -0.66847295,    2.46,    1,    1;
+      0.20889705,    2.09,    3,    1;
+      0.19421381,    0.88,    6,    1;
+      -0.22917851,    1.09,    6,    1;
+      -0.60405866,    3.25,    2,    2;
+      0.066680654,    4.62,    3,    2],
+    residualGauss=[
+      0.017534618,    0.76,    1,    2,    2,    -0.963,    -2.33,    0.684,    1.283;
+      0.33874242,    2.5,    1,    2,    2,    -1.977,    -3.47,    0.829,    0.6936;
+      0.22228777,    2.75,    1,    2,    2,    -1.917,    -3.15,    1.419,    0.788;
+      -0.23219062,    3.05,    2,    2,    2,    -2.307,    -3.19,    0.817,    0.473;
+      -0.09220694,    2.55,    2,    2,    2,    -2.546,    -0.92,    1.5,    0.8577;
+      -0.47575718,    8.4,    4,    2,    2,    -3.28,    -18.8,    1.426,    0.271;
+      -0.017486824,    6.75,    1,    2,    2,    -14.6,    -547.8,    1.093,    0.948])
+  "Coefficients of the Helmholtz EoS";
+
+  final constant Transport.ThermalConductivityCoefficients
+  thermalConductivityCoefficientsPropane(
+    diluteTred=369.85,
+    an=[
+      -0.00124778,        0;
+      0.00816371,        1;
+      0.0199374,        2],
+    ad=[
+      1.0,        0],
+    diluteModel=2,
+    residualTred=369.82,
+    residualDred=220.3,
+    b=[
+      -0.03695,        0,        1,       0,       0;
+      0.148658,        0,        2,       0,       0;
+      -0.119986,        0,        3,       0,       0;
+      0.0412431,        0,        4,       0,       0;
+      -0.00486905,        0,        5,       0,       0;
+      0.0482798,        -1,        1,       0,       0;
+      -0.135636,        -1,        2,       0,       0;
+      0.117588,        -1,        3,       0,       0;
+      -0.0436911,        -1,        4,       0,       0;
+      0.00616079,        -1,        5,       0,       0],
+    residualModel=2,
+    Rd=1.03,
+    qD=1395410494.88,
+    zeta0=1.94e-10,
+    Gamma=0.0496,
+    gamma=1.239,
+    criticalModel=2);
+
+  final constant Transport.DynamicViscosityCoefficients
+  dynamicViscosityCoefficientsPropane(
+    diluteLead=2.1357e-08,
+    a=[
+      0.25104574,        0;
+      -0.47271238,        1;
+      0.060836515,        3],
+    diluteModel=2,
+    sigma=0.49748000000000003,
+    epsilon=263.88,
+    b=[
+      -19.572881,        0,        0;
+      219.73999,        -0.25,        0;
+      -1015.3226,        -0.5,        0;
+      2471.01251,        -0.75,        0;
+      -3375.1717,        -1.0,        0;
+      2491.6597,        -1.25,        0;
+      -787.26086,        -1.5,        0;
+      14.085455,        -2.5,        0;
+      -0.34664158,        -5.5,        0],
+    initialModel=2,
+    residualTred=369.825,
+    residualDMred=5000,
+    dp=[
+      3.59873030195e-05,        2,        0,        0,        1;
+      -0.000180512188564,        2,        1,        0,        1;
+      8.77124888223e-05,        2,        2,        0,        1;
+      -0.000105773052525,        3,        0,        0,        1;
+      0.000205319740877,        3,        1,        0,        1;
+      -0.00012921093261,        3,        2,        0,        1;
+      5.89491587759e-05,        4,        0,        0,        1;
+      -0.0001297400331,        4,        1,        0,        1;
+      7.66280419971e-05,        4,        2,        0,        1;
+      -9.59407868475e-06,        5,        0,        0,        1;
+      2.10726986598e-05,        5,        1,        0,        1;
+      -1.43971968187e-05,        5,        2,        0,        1],
+    bl=[
+      0.00161688405374,        1,        0],
+    b0n=[
+      2.50053938863,        0;
+      2.1517543007382995,        -0.5],
+    b0d=[
+      1,        0],
+    residualModel=2);
+    
+    //Nitrogen as reference
+      final constant FluidConstants
+    fluidConstantsNitrogen(
+      casRegistryNumber="7727-37-9",
+      molarMass=0.02801348,
+      hasCriticalData=true,
+         criticalTemperature=126.192,
+         criticalPressure=3395800,
+         criticalMolarVolume=8.941423555697418e-05,
+HCRIT0=29232.4,         SCRIT0=4214.84,      hasIdealGasHeatCapacity=false,
+      hasDipoleMoment=true,
+         dipoleMoment=0.0,
+      hasFundamentalEquation=true,
+      hasLiquidHeatCapacity=true,
+      hasSolidHeatCapacity=false,
+      hasAccurateViscosityData=true,
+      hasAccurateConductivityData=true,
+      hasVapourPressureCurve=true,
+      hasAcentricFactor=true,
+         acentricFactor=0.0372,
+      triplePointTemperature=63.151,
+      triplePointPressure=12519.78348430944,
+      normalBoilingPoint=77.355,
+      meltingPoint=63.151) "Fluid Constants";
+  //HCRIT0=29256.45322723223,//CoolProp
+    //EOS calculation
+    //SCRIT0=4215.005463992114,//CoolProp
+    //EOS calculation
+    final constant EoS.HelmholtzCoefficients
+    helmholtzCoefficientsNitrogen(
+      idealLead={-12.76952708, -0.00784163},
+      idealLog=[
+        2.5,         1.],
+      idealPower=[
+        -0.0001934819,      -1;
+        -1.247742e-05,      -2;
+        6.678326e-08,      -3],
+      idealEinstein=[
+        1.012941,        -26.65788],
+      idealNBPoffset={9.54897, 3.25779},
+      residualPoly=[
+        0.924803575275,    0.25,    1;
+        -0.492448489428,    0.875,    1;
+        0.661883336938,    0.5,    2;
+        -1.92902649201,    0.875,    2;
+        -0.0622469309629,    0.375,    3;
+        0.349943957581,    0.75,    3],
+      residualBwr=[
+        0.564857472498,    0.5,    1,    1;
+        -1.61720005987,    0.75,    1,    1;
+        -0.481395031883,    2,    1,    1;
+        0.421150636384,    1.25,    3,    1;
+        -0.0161962230825,    3.5,    3,    1;
+        0.172100994165,    1,    4,    1;
+        0.00735448924933,    0.5,    6,    1;
+        0.0168077305479,    3,    6,    1;
+        -0.00107626664179,    0,    7,    1;
+        -0.0137318088513,    2.75,    7,    1;
+        0.000635466899859,    0.75,    8,    1;
+        0.00304432279419,    2.5,    8,    1;
+        -0.0435762336045,    4,    1,    2;
+        -0.0723174889316,    6,    2,    2;
+        0.0389644315272,    6,    3,    2;
+        -0.021220136391,    3,    4,    2;
+        0.00408822981509,    3,    5,    2;
+        -5.51990017984e-05,    6,    8,    2;
+        -0.0462016716479,    16,    4,    3;
+        -0.00300311716011,    11,    5,    3;
+        0.0368825891208,    15,    5,    3;
+        -0.0025585684622,    12,    8,    3;
+        0.00896915264558,    12,    3,    4;
+        -0.0044151337035,    7,    5,    4;
+        0.00133722924858,    4,    6,    4;
+        0.000264832491957,    16,    9,    4],
+      residualGauss=[
+        19.6688194015,    0,    1,    2,    2,    -20,    -325,    1.16,    1;
+        -20.911560073,    1,    1,    2,    2,    -20,    -325,    1.16,    1;
+        0.0167788306989,    2,    3,    2,    2,    -15,    -300,    1.13,    1;
+        2627.67566274,    3,    2,    2,    2,    -25,    -275,    1.25,    1])
+    "Coefficients of the Helmholtz EoS";
+  
+    final constant Transport.ThermalConductivityCoefficients
+    thermalConductivityCoefficientsNitrogen(
+      an=[
+        0.001511,        0;
+        0.002117,        -1.0;
+        -0.003332,        -0.7],
+      diluteModel=3,
+      b=[
+        0.008862,        0.0,        1,        0,        0;
+        0.03111,        0.03,        2,        0,        0;
+        -0.07313,        0.2,        3,        1,        1;
+        0.02003,        0.8,        4,        1,        2;
+        -0.0007096,        0.6,        8,        1,        2;
+        0.0002672,        1.9,        10,        1,        2],
+      residualModel=3,
+      Tref=252.384,
+      Rd=1.01,
+      qD=2500000000.0,
+      zeta0=1.7e-10,
+      Gamma=0.055,
+      gamma=1.2415,
+      criticalModel=2);
+  
+    final constant Transport.DynamicViscosityCoefficients
+    dynamicViscosityCoefficientsNitrogen(
+      diluteLead=2.66958e-08,
+      a=[
+        0.431,        0;
+        -0.4623,        1;
+        0.08406,        2;
+        0.005341,        3;
+        -0.00331,        4],
+      diluteModel=2,
+      sigma=0.36560000000000004,
+      epsilon=98.94,
+      initialModel=0,
+      residualTred=126.192,
+      residualDMred=11183.9,
+      dp=[
+        1.072e-05,        2,        0.1,        0,        0;
+        3.989e-08,        10,        0.25,        -1,        1;
+        1.208e-09,        12,        3.2,        -1,        1;
+        -7.402e-06,        2,        0.9,        -1,        2;
+        4.62e-06,        1,        0.3,        -1,        3],
+      bl=[
+        0,        1,        0],
+      b0n=[
+        1,        0],
+      b0d=[
+        1,        0],
+      residualModel=2);
+  //R134a as reference
+      final constant FluidConstants
+    fluidConstantsR134a(
+      casRegistryNumber="811-97-2",
+      molarMass=0.102032,
+      hasCriticalData=true,
+         criticalTemperature=374.18,
+         criticalPressure=4059280,
+         criticalMolarVolume=0.0002008503936978331,
+HCRIT0=390065,         SCRIT0=1563.25,      hasIdealGasHeatCapacity=false,
+      hasDipoleMoment=true,
+         dipoleMoment=2.058,
+      hasFundamentalEquation=true,
+      hasLiquidHeatCapacity=true,
+      hasSolidHeatCapacity=false,
+      hasAccurateViscosityData=true,
+      hasAccurateConductivityData=true,
+      hasVapourPressureCurve=true,
+      hasAcentricFactor=true,
+         acentricFactor=0.32684,
+      triplePointTemperature=169.85,
+      triplePointPressure=389.56378856198955,
+      normalBoilingPoint=247.076,
+      meltingPoint=169.85) "Fluid Constants";
+  
+    final constant EoS.HelmholtzCoefficients
+    helmholtzCoefficientsR134a(
+      idealLead={-1.019535, 9.047135},
+      idealLog=[
+        -1.629789,         1.],
+      idealPower=[
+        -9.723916,      -0.5;
+        -3.92717,      -0.75],
+      idealASHRAEoffset={9.76341, -4.85853},      
+      idealIIRoffset={0, 0},
+      idealNBPoffset={10.6646, -5.43791},
+      residualPoly=[
+        0.05586817,    -0.5,    2;
+        0.498223,    0,    1;
+        0.02458698,    0,    3;
+        0.0008570145,    0,    6;
+        0.0004788584,    1.5,    6;
+        -1.800808,    1.5,    1;
+        0.2671641,    2,    1;
+        -0.04781652,    2,    2],
+      residualBwr=[
+        0.01423987,    1,    5,    1;
+        0.3324062,    3,    2,    1;
+        -0.007485907,    5,    2,    1;
+        0.0001017263,    1,    4,    2;
+        -0.5184567,    5,    1,    2;
+        -0.08692288,    5,    4,    2;
+        0.2057144,    6,    1,    2;
+        -0.005000457,    10,    2,    2;
+        0.0004603262,    10,    4,    2;
+        -0.003497836,    10,    1,    3;
+        0.006995038,    18,    5,    3;
+        -0.01452184,    22,    3,    3;
+        -0.0001285458,    50,    10,    4])
+    "Coefficients of the Helmholtz EoS";
+  
+    final constant Transport.ThermalConductivityCoefficients
+    thermalConductivityCoefficientsR134a(
+      diluteTred=1,
+      an=[
+        -0.0105248,        0;
+        8.00982e-05,        1],
+      ad=[
+        1.0,        0],
+      diluteModel=2,
+      residualTred=1,
+      residualDred=515.249968352,
+      b=[
+        0.0037740609300000003,        0,        1,       0,       0;
+        0.010534223865,        0,        2,       0,       0;
+        -0.002952794565,        0,        3,       0,       0;
+        0.00128672592,        0,        4,       0,       0],
+      residualModel=2,
+      Rd=1.03,
+      qD=1892020000.0,
+      zeta0=1.94e-10,
+      Gamma=0.0496,
+      gamma=1.239,
+      criticalModel=2);
+  
+    final constant Transport.DynamicViscosityCoefficients
+    dynamicViscosityCoefficientsR134a(
+      diluteLead=2.1357e-08,
+      a=[
+        0.355404,        0;
+        -0.464337,        1;
+        0.0257353,        2],
+      diluteModel=2,
+      sigma=0.46893199999999996,
+      epsilon=299.363,
+      b=[
+        -19.572881,        0,        0;
+        219.73999,        -0.25,        0;
+        -1015.3226,        -0.5,        0;
+        2471.01251,        -0.75,        0;
+        -3375.1717,        -1.0,        0;
+        2491.6597,        -1.25,        0;
+        -787.26086,        -1.5,        0;
+        14.085455,        -2.5,        0;
+        -0.34664158,        -5.5,        0],
+      initialModel=2,
+      residualTred=374.21,
+      residualDMred=5017.053,
+      dp=[
+        -2.06900719e-05,        1,        0,        0,        1;
+        3.56029549e-07,        2,        6,        0,        1;
+        2.11101816e-06,        2,        2,        0,        1;
+        1.39601415e-05,        2,        0.5,        0,        1;
+        -4.5643502e-06,        2,        -2,        0,        1;
+        -3.51593275e-06,        3,        0,        0,        1],
+      bl=[
+        0.00021476332,        0,        0],
+      b0n=[
+        3.163695636,        0],
+      b0d=[
+        1,        0;
+        -0.0890173375,        -1;
+        0.100035295,        -2],
+      residualModel=2);
+  end ECSreferences;
+  
   record DynamicViscosityCoefficients
     constant Integer diluteModel=0 "0=no model, 1=hardcoded, 2=collision integral, 3=kinetic theory, 4=powers of T, 5=powers of Tr, 6=Chung, 10=from T correlation";
     constant Temperature epsilon=0 "Lennard-Jones energy parameter in K";
@@ -132,7 +532,7 @@ package Transport
       delta0Prev := delta0;
       tau0Delta := ((Arr - Arr0) * Z0d - dd * (Z - Z0)) / eqDiscr;
       delta0Delta := (dt * (Z - Z0) - (Arr - Arr0) * Z0t) / eqDiscr;
-      for scale in 0.6:(-scale / 2):0.01 loop//should begin at 1.0 but 0.6 is in order to improve convergence
+      for scale in 0.7:(-scale / 2):0.01 loop//should begin at 1.0 but 0.7 is in order to improve convergence
         tau0 := tau0Prev + scale * tau0Delta;
         delta0 := delta0Prev + scale * delta0Delta;
         Z0 := 1 + delta0 * rf_rd(delta0, tau0);
@@ -442,6 +842,8 @@ algorithm
     + sum(a[i,1]*(delta*Disb[i]*Psi_td[i] + delta*Psi[i]*Disb_td[i] + delta*Disb_d[i]*Psi_t[i] + delta*Disb_t[i]*Psi_d[i] + Disb[i]*Psi_t[i] + Psi[i]*Disb_t[i]) for i in 1:nNonAna);
 
 end rf_rtd;
+
+
 
 
 end Transport;
