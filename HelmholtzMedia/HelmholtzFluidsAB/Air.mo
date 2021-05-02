@@ -78,8 +78,7 @@ extends Interfaces.PartialHelmholtzMedium(
       0.212236768,        -16.90741],
     idealEinsteinGeneralized=[
       -0.197938904,        0.6666666666666666,        1,        87.31279],
-    idealNBPoffset={10.3753039487406, 3.31112445645577},
-    
+  
     residualPoly=[
       0.118160747229,    0,    1;
       0.713116392079,    0.33,    1;
@@ -156,6 +155,14 @@ extends Interfaces.PartialHelmholtzMedium(
 
   final constant Ancillary.AncillaryCoefficients
   ancillaryCoefficientsAir(
+    pressureSaturationModel=PressureSaturationModel.PS5,
+    pressureSaturation=[
+      0.2260724,        0.5;
+      -7.080499,        1.0;
+      5.700283,        1.5;
+      -12.44017,        2.0;
+      17.81926,        2.5;
+      -10.81364,        3.0],
     densityLiquidModel=DensityLiquidModel.DL1,
     densityLiquid=[
       23549.22872973586,        0.052000000000000005;

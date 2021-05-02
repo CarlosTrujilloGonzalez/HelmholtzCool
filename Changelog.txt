@@ -1,3 +1,9 @@
 Version 1.0.1
 - Solved problem of very slow OMEdit opening of fluid packages
 - Added 1,2-Dichloroethane (R150)
+
+Version 1.0.2
+- Added DiethylEther
+- Added MethylLinoleate
+- Added MethylOleate
+- Added R410A 
